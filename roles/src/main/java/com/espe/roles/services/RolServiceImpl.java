@@ -1,8 +1,7 @@
-package com.espe.roles.services.impl;
+package com.espe.roles.services;
 
-import com.espe.roles.model.entities.Rol;
+import com.espe.roles.model.Rol;
 import com.espe.roles.repositories.RolRepository;
-import com.espe.roles.services.RolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,38 +12,34 @@ import java.util.Optional;
 public class RolServiceImpl implements RolService {
 
     @Autowired
-    private RolRepository rolRepository;
+    private RolRepository RolRepository;
 
     @Override
-    public List<Rol> getAllRoles() {
-        return rolRepository.findAll();
+    public List<Rol> findAll() {
+        return (List<Rol>) RolRepository.findAll();
     }
 
     @Override
-    public Optional<Rol> getRolById(Long id) {
-        return rolRepository.findById(id);
+    public Optional<Rol> findById(Long id) {
+        return RolRepository.findById(id);
     }
 
     @Override
-    public Rol createRol(Rol rol) {
-        return rolRepository.save(rol);
+    public Rol save(Rol Rol) {
+        return RolRepository.save(Rol);
     }
 
     @Override
-    public Optional<Rol> updateRol(Long id, Rol rol) {
-        if (rolRepository.existsById(id)) {
-            rol.setId(id);
-            return Optional.of(rolRepository.save(rol));
-        }
-        return Optional.empty();
+    public Rol update(Long id, Rol updatedRol) {
+        return RolRepository.findById(id).map(existingRol -> {
+            existingRol.setNombre(updatedRol.getNombre());
+            existingRol.setDescripcion(updatedRol.getDescripcion());
+            return RolRepository.save(existingRol);
+        }).orElseThrow(() -> new RuntimeException("Rol no encontrado con el ID: " + id));
     }
 
     @Override
-    public boolean deleteRol(Long id) {
-        if (rolRepository.existsById(id)) {
-            rolRepository.deleteById(id);
-            return true;
-        }
-        return false;
+    public void deleteById(Long id) {
+        RolRepository.deleteById(id);
     }
 }
